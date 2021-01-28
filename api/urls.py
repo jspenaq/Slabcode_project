@@ -1,5 +1,6 @@
 from django.urls import include, path
 from django.views.generic.base import View
+from django.views.generic import TemplateView
 from . import views
 from .views import UserCreate
 
@@ -16,4 +17,7 @@ urlpatterns = [
     path('api/task-detail/<str:pk>/', views.taskDetail, name='project_detail'),
     path('api/task-update/<str:pk>/', views.taskUpdate, name='project_update'),
     path('api/task-delete/<str:pk>/', views.taskDelete, name='project_delete'),
+    path('docs/', TemplateView.as_view(template_name='documentation.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='swagger-ui'),
 ]
