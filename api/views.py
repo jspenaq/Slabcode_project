@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from rest_framework import serializers, viewsets
 from rest_framework.permissions import AllowAny
-from .serializers import ProjectSerializers, UserSerializer
+from .serializers import UserSerializer, ProjectSerializers, TaskSerializers
 from .models import Project, Task
 
 
@@ -24,6 +24,8 @@ def apiOverview(request):
     }
 
     return Response(api_urls)
+
+# ------------- Projects -------------
 
 @api_view(['GET'])
 def projectList(request):
@@ -57,3 +59,38 @@ def projectDelete(request, pk):
     project = Project.objects.get(id=pk)
     project.delete()
     return Response('Project deleted.')
+
+# ------------- Tasks -------------
+
+@api_view(['GET'])
+def taskList(request):
+    tasks = Task.objects.all()
+    serializer = TaskSerializers(tasks, many=True)
+    return Response(serializer.data)
+    
+@api_view(['POST'])
+def taskCreate(request):
+    serializer = TaskSerializers(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def taskDetail(request, pk):
+    task = Task.objects.get(id=pk)
+    serializer = TaskSerializers(task, many=False)
+    return Response(serializer.data)
+
+@api_view(['PUT'])
+def taskUpdate(request, pk):
+    task = Task.objects.get(id=pk)
+    serializer = TaskSerializers(instance=task, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def taskDelete(request, pk):
+    task = Task.objects.get(id=pk)
+    task.delete()
+    return Response('Task deleted.')
